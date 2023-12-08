@@ -1,0 +1,121 @@
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+
+class Player {
+public:
+    std::string name;
+    int health;
+    int attackDamage;
+
+    Player(const std::string& playerName, int playerHealth, int playerAttackDamage)
+        : name(playerName), health(playerHealth), attackDamage(playerAttackDamage) {}
+
+    bool isAlive() const {
+        return health > 0;
+    }
+
+    int attack() const {
+        return rand() % attackDamage + 1;  // Random damage between 1 and attackDamage
+    }
+};
+
+class Enemy {
+public:
+    std::string type;
+    int health;
+    int attackDamage;
+
+    Enemy(const std::string& enemyType, int enemyHealth, int enemyAttackDamage)
+        : type(enemyType), health(enemyHealth), attackDamage(enemyAttackDamage) {}
+
+    bool isAlive() const {
+        return health > 0;
+    }
+
+    int attack() const {
+        return rand() % attackDamage + 1;  // Random damage between 1 and attackDamage
+    }
+};
+
+void displayIntroduction(const Player& player) {
+    std::cout << "Welcome, " << player.name << ", to the Land of Adventures!\n";
+    std::cout << "You find yourself at a crossroad. Your journey begins...\n";
+}
+
+void makeChoice(Player& player, Enemy& enemy) {
+    std::cout << "What do you want to do?\n";
+    std::cout << "1. Fight the " << enemy.type << "\n";
+    std::cout << "2. Rest and regain health\n";
+
+    int choice;
+    std::cin >> choice;
+
+    switch (choice) {
+        case 1:
+            std::cout << "You choose to fight!\n";
+            break;
+        case 2:
+            std::cout << "You choose to rest and regain health.\n";
+            player.health += 10;  // Rest and regain 10 health
+            break;
+        default:
+            std::cout << "Invalid choice. You stand frozen in indecision.\n";
+    }
+}
+
+void battle(Player& player, Enemy& enemy) {
+    std::cout << "You encounter a fearsome " << enemy.type << "!\n";
+
+    while (player.isAlive() && enemy.isAlive()) {
+        makeChoice(player, enemy);
+
+        // Player's turn
+        int playerDamage = player.attack();
+        enemy.health -= playerDamage;
+        std::cout << "You hit the " << enemy.type << " for " << playerDamage << " damage.\n";
+
+        // Check if enemy is defeated
+        if (!enemy.isAlive()) {
+            std::cout << "You defeated the " << enemy.type << " and continue your journey!\n";
+            break;
+        }
+
+        // Enemy's turn
+        int enemyDamage = enemy.attack();
+        player.health -= enemyDamage;
+        std::cout << "The " << enemy.type << " hits you for " << enemyDamage << " damage.\n";
+
+        // Check if player is defeated
+        if (!player.isAlive()) {
+            std::cout << "You were defeated by the " << enemy.type << ". Game over!\n";
+            break;
+        }
+
+        // Display current health
+        std::cout << "Your health: " << player.health << "\t" << enemy.type << " health: " << enemy.health << "\n";
+    }
+}
+
+int main() {
+    srand(static_cast<unsigned>(time(0)));  // Seed for random number generation
+
+    // Create player
+    std::string playerName;
+    std::cout << "Enter your character's name: ";
+    std::cin >> playerName;
+
+    Player player(playerName, 100, 20);
+
+    // Introduction
+    displayIntroduction(player);
+
+    // Create enemy
+    Enemy enemy("Dragon", 60, 25);
+
+    // Start the adventure
+    battle(player, enemy);
+
+    return 0;
+}
