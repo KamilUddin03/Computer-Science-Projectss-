@@ -1,0 +1,89 @@
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+   // Initialize the board to 0
+   int chessboard[8][8] = {};
+
+   // Start in the 1st row, 1st column, and place a queen there
+   int currentRow = 0, currentColumn = 0;
+   chessboard[currentRow][currentColumn] = 1;
+
+nextColumn:
+   currentColumn++; // Move to the next column
+
+   if (currentColumn > 7) // If you have passed the last column
+      goto printSolution;
+
+   // Move to one before the first row
+   currentRow = -1;
+
+nextRow:
+   // Move to the next row
+   currentRow++;
+
+   if (currentRow > 7) // If you have passed the end of the column
+      goto backtrack;
+
+   // If there is a queen in the same row (to the left), goto nextRow
+   for (int i = 1; i <= currentColumn; i++) { // Each square to the left of the current square
+      if (chessboard[currentRow][currentColumn - i] == 1) // There is a queen on that square
+         goto nextRow;
+   }
+
+   // If there is a queen in the upper-left diagonal, goto nextRow
+   for (int i = 1; i < 8; i++) { // End the loop when you are above or left of the chessboard
+      if ((currentRow - i) < 0 || (currentColumn - i) < 0)
+         break;
+      if (chessboard[currentRow - i][currentColumn - i] == 1) // There is a queen i spots above and left of the current square
+         goto nextRow;
+   }
+
+   // If there is a queen in the lower-left diagonal, goto nextRow
+   for (int i = 1; i < 8; i++) { // End the loop when you are below or left of the chessboard
+      if ((currentRow + i) > 7 || (currentColumn - i) < 0)
+         break;
+      if (chessboard[currentRow + i][currentColumn - i] == 1) // There is a queen i spots below and left of the current square
+         goto nextRow;
+   }
+
+   chessboard[currentRow][currentColumn] = 1; // Place a queen in the current square (2D version only)
+
+   goto nextColumn;
+
+backtrack:
+   // Move to the previous column
+   currentColumn--;
+
+   if (currentColumn < 0)
+      return 0; // You have moved to the left of the chessboard, exit the program
+
+   for (int i = 0; i < 8; i++) {
+      if (chessboard[i][currentColumn] == 1) {
+         currentRow = i; // Find the square in the column with a queen in it and set currentRow to the row number of that square
+         break;
+      }
+   }
+
+   chessboard[currentRow][currentColumn] = 0; // Remove the queen from the current square
+
+   goto nextRow;
+
+printSolution:
+   static int solutionCount = 0;
+   cout << "Solution #" << ++solutionCount << ":\n";
+
+   for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+         cout << chessboard[i][j];
+      }
+      cout << endl;
+   }
+   cout << endl;
+   // Use a nested loop to print the chessboard
+   goto backtrack;
+
+   return 0;
+}
