@@ -1,0 +1,62 @@
+#include <iostream>
+using namespace std;
+
+bool isStable(int partners[], int currentMan) {
+    static int menPreferences[3][3] = {
+        {0, 2, 1},
+        {0, 2, 1},
+        {1, 2, 0}
+    };
+
+    static int womenPreferences[3][3] = {
+        {2, 1, 0},
+        {0, 1, 2},
+        {2, 0, 1}
+    };
+
+    // Check for conflicts between currentMan's marriage and previous marriages.
+    for (int i = 0; i < currentMan; ++i) {
+        if (partners[i] == partners[currentMan] ||
+            menPreferences[i][partners[currentMan]] < menPreferences[i][partners[i]] &&
+            womenPreferences[partners[currentMan]][i] < womenPreferences[partners[currentMan]][currentMan] ||
+            menPreferences[currentMan][partners[i]] < menPreferences[currentMan][partners[currentMan]] &&
+            womenPreferences[partners[i]][currentMan] < womenPreferences[partners[i]][i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void printSolution(int partners[]) {
+    static int solutionNumber = 0;
+    cout << "Solution #" << ++solutionNumber << ":\nMan\tWoman\n";
+    for (int i = 0; i < 3; ++i) {
+        cout << i << "\t" << partners[i] << "\n";
+    }
+    cout << "\n";
+}
+
+int main() {
+    int partners[3] = {};
+    int currentMan = 0;
+
+    while (currentMan >= 0) {
+        if (currentMan == 2) {
+            printSolution(partners);
+            --currentMan;
+        } else {
+            partners[++currentMan] = -1;
+        }
+
+        while (currentMan >= 0) {
+            ++partners[currentMan];
+            if (partners[currentMan] == 3) {
+                --currentMan;
+            } else if (isStable(partners, currentMan)) {
+                break;
+            }
+        }
+    }
+
+    return 0;
+}
