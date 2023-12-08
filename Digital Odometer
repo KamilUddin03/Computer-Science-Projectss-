@@ -1,0 +1,35 @@
+#include <iostream>
+
+class Odometer {
+private:
+    int mileage;
+
+public:
+    Odometer() : mileage(0) {}
+
+    void incrementMileage() {
+        // Increment the mileage by 1
+        mileage++;
+
+        // Check for odometer rollover
+        if (mileage > 999999) {
+            mileage = 0;  // Reset to 0 if the mileage exceeds 999999
+        }
+    }
+
+    int getMileage() const {
+        return mileage;
+    }
+};
+
+int main() {
+    Odometer odometer;
+
+    // Simulate driving by incrementing the mileage
+    for (int i = 0; i < 10; ++i) {
+        odometer.incrementMileage();
+        std::cout << "Mileage: " << odometer.getMileage() << " miles\n";
+    }
+
+    return 0;
+}
